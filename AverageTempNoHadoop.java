@@ -4,15 +4,17 @@ public class AverageTempNoHadoop
 {
   public static void main(String[]args)throws IOException
   {
+    double testDouble = 5.0/3;
+    System.out.println(testDouble);
     File file = new File("MRTest-1.txt");
     Scanner input = new Scanner(file);
-    HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
+    HashMap<Integer,Double> map = new HashMap<Integer,Double>();
     HashMap<Integer,Integer> totalMap = new HashMap<Integer,Integer>();
     while(input.hasNext())
     {
       String tokens[] = input.nextLine().split(" ");
       int key = Integer.parseInt(tokens[0]);
-      int value = Integer.parseInt(tokens[1]);
+      double value = Double.parseDouble(tokens[1]);
 
       if(map.containsKey(key))
       {

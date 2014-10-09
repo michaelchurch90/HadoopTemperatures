@@ -11,11 +11,11 @@ import org.apache.hadoop.util.*;
 	
 	public class AverageTemp {
 	
-	   public static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
+	   public static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, FloatWritable> {
 	     private  IntWritable temp = new IntWritable();
 	     private Text code = new Text();
 	    
-	     public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
+	     public void map(LongWritable key, Text value, OutputCollector<Text, FloatWritable> output, Reporter reporter) throws IOException {
 
 	      //This is the code for the original wordcount
 	      // String line = value.toString();
@@ -27,8 +27,7 @@ import org.apache.hadoop.util.*;
 		  String tokens[] = value.toString().split(" ");
 	          code.set(tokens[0]);
 		   
-		  temp = new IntWritable(Integer.parseInt(tokens[1]));
-		  output.collect(code, temp);
+		  output.collect(code, new FloatWritable(Float.parseFloat(tokens[1])));
 		  
 		   
 
@@ -36,16 +35,16 @@ import org.apache.hadoop.util.*;
 	     }
 	   }
 	
-	   public static class Reduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
-	     public void reduce(Text key, Iterator<IntWritable> values, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
-	       int sum = 0;
+	   public static class Reduce extends MapReduceBase implements Reducer<Text, FloatWritable, Text, FloatWritable> {
+	     public void reduce(Text key, Iterator<FloatWritable> values, OutputCollector<Text, FloatWritable> output, Reporter reporter) throws IOException {
+	       float sum = 0;
 	       int count=0;
 	       while (values.hasNext()) {
 	         sum += values.next().get();
 		 count++;
 	       }
-	       int average = sum/count;
-	       output.collect(key, new IntWritable(average));
+	       float average = sum/count;
+	       output.collect(key, new FloatWritable(average));
 	     }
 	   }
 	
@@ -53,8 +52,9 @@ import org.apache.hadoop.util.*;
 	     JobConf conf = new JobConf(AverageTemp.class);
 	     conf.setJobName("AverageTemp");
 	
+
 	     conf.setOutputKeyClass(Text.class);
-	     conf.setOutputValueClass(IntWritable.class);
+	     conf.setOutputValueClass(FloatWritable.class);
 	
 	     conf.setMapperClass(Map.class);
 	     conf.setCombinerClass(Reduce.class);
